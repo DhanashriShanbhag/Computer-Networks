@@ -1,33 +1,69 @@
-// used for Congestion control in a network
+#include <iostream>
+#include <vector>
+#include <bits/stdc++.h> w
+using namespace std;
 
-#include<stdio.h>
+int main()
+{
+    int sum=0,pkt,leak = 10;
+    int choice;
+    vector <int> bucket;
+    int cap = 50;
+    while(true)
+    {
+        cout<<"1. Add packet\n2. No packets\n3. Exit\nEnter choice : ";
+        cin>>choice;
+        switch(choice)
+        {
+        case 1 :
+            cout<<"Enter pkt : ";
+            cin>>pkt;
+            if(pkt>cap-sum)
+                cout<<"Bucket OverFlow"<<endl;
+            else
+            {
+                bucket.push_back(pkt);
+                sum = accumulate(bucket.begin(), bucket.end(), 0);
+                cout<<"\nBefore leak"<<endl;
+                cout<<"sum = "<<sum<<" leak = "<<leak<<endl;
+            }
+            bucket.push_back(-leak);
+            sum = accumulate(bucket.begin(), bucket.end(), 0);
+            if(sum<0)
+                sum=0;
+            cout<<"\nAfter leak"<<endl;
+            cout<<"sum = "<<sum<<" leak = "<<leak<<endl;
+            break;
 
-#define capacity 50
+        case 2:
+            if(sum>leak)
+            {
+                bucket.push_back(-leak);
+                sum = accumulate(bucket.begin(), bucket.end(), 0);
+                cout<<"sum = "<<sum<<" leak = "<<leak<<endl;
+            }
+            else if(sum<leak)
+            {
+                sum = 0;
+                cout<<"sum = "<<sum<<" leak = "<<leak<<endl;
+            }
+            else
+            {
+                bucket.push_back(-leak);
+                sum = accumulate(bucket.begin(), bucket.end(), 0);
+                cout<<"sum = "<<sum<<endl;
+                cout<<"\nBucket Empty"<<endl;
+            }
+            break;
 
-void main() {
-    int timeLimit = 10;
-    int bucketCapacity = 0, outputRate = 5;
-    
-    while(timeLimit < 100) {
-        int newPacket;
-        printf("\nenter new packet size: ");
-        scanf("%d", &newPacket);
-        
-        if(newPacket < capacity) {
-            bucketCapacity = bucketCapacity + newPacket;
-            printf("\nbucket capacity currently: %d", bucketCapacity);
-            bucketCapacity = bucketCapacity - outputRate;
-            printf("\nbucket capacity after output: %d", bucketCapacity);
-            timeLimit++;
-        } else if(newPacket > capacity || (newPacket + bucketCapacity) > capacity) {
-            printf("\nnew packet cannot be added to bucket");
-            bucketCapacity = bucketCapacity - outputRate;
-            printf("\nbucket capacity after output: %d", bucketCapacity);
-            timeLimit++;
-        } else if(bucketCapacity < 0) {
-            bucketCapacity = 0;
-            printf("\nbucket capacity after output: %d", bucketCapacity);
-            timeLimit++;
+        case 3:
+            cout<<"\nexit";
+            exit(0);
+            break;
+        default :
+            cout<<"wrong choice\n";
         }
     }
+
+    return 0;
 }
